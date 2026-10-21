@@ -1,0 +1,3 @@
+.venv/
+NOAA_OISST_North_Atlantic_*.csv
+.~lock.*#
