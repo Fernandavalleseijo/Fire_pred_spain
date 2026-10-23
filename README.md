@@ -25,10 +25,47 @@ SST and SST-anomaly regional means from NOAA OISST v2.1:
   longitude convention).
 - The CSV contains the date, area-weighted mean SST, and area-weighted mean
   NOAA SST anomaly.
+- [`NOAA_SST_Regions.py`](./NOAA_SST_Regions.py) exports the daily area-weighted
+  SST and NOAA anomaly means for three literature-defined regions:
+  Ossó NW (42–52°N, 52–40°W), Ossó SE (35–42°N, 35–20°W), and Krüger
+  (45–60°N, 40–15°W). Its CSV contains a date plus six value columns: one SST
+  and one anomaly series for each region.
 
 This script is a data-preparation step; it does not yet train or evaluate a
 wildfire prediction model, and it does not yet process SLP, soil moisture, or
 wildfire records.
+
+## ERA5-Land daily soil moisture
+
+[`ERA5Land_Soil_Moisture_Daily.py`](./ERA5Land_Soil_Moisture_Daily.py) saves
+one NetCDF file per day with the four volumetric soil-water layers (`swvl1`–
+`swvl4`) for the Spain bounding box. It defaults to 1950-01-02 through
+2025-12-31 and writes files to
+`/home/jose/Escritorio/UCM_Madrid/Soil_Mositure`.
+
+Install the required packages in the project environment:
+
+```bash
+python -m pip install xarray zarr "dask[array]" pandas netCDF4 requests aiohttp
+```
+
+The script uses the ECMWF soil-water Zarr URL by default, with the `time`
+chunked store recommended for spatial maps. Run it and enter your CDS API key
+when prompted; the key will not be shown as you type:
+
+```bash
+python ERA5Land_Soil_Moisture_Daily.py
+```
+
+Alternatively, set `CDS_API_KEY` in the environment to avoid the prompt. Keep
+the key private and do not put it in the script. To use a different Zarr URL,
+set `ERA5LAND_ZARR_URL` or pass `--zarr-url`. Additional Zarr storage options
+can be supplied as a JSON object through `ERA5LAND_ZARR_STORAGE_OPTIONS`. Use
+`--start-date`, `--end-date`, and `--output` to select a shorter test period
+or a different local output directory. Existing daily files are skipped so
+an interrupted run can be resumed. Progress is printed while opening the
+dataset and preparing the Spain subset, then for each batch of up to seven
+days while data are read and periodically as daily files are saved.
 
 ## Running the SST extraction
 
@@ -49,6 +86,15 @@ To process a shorter date range, for example January 2000:
 ```bash
 python NOAA_SST_Cloud.py --start-date 2000-01-01 --end-date 2000-01-31
 ```
+
+Run the three-region extraction for the default 1981-09-01–2025 period:
+
+```bash
+python NOAA_SST_Regions.py
+```
+
+The new script accepts the same `--start-date`, `--end-date`, and `--output`
+options as `NOAA_SST_Cloud.py`.
 
 The CSV is written beside the script by default. Use `--output PATH` to choose
 a different output path.
