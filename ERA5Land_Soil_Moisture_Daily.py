@@ -33,6 +33,8 @@ DEFAULT_ZARR_URL = (
 # Geographic bounds of the requested Spain-area rectangle.
 LATITUDE_BOUNDS = (35.8, 43.9)
 LONGITUDE_BOUNDS = (-9.5, 4.5)
+# Keep each remote read to one day to minimize peak memory use.
+BATCH_DAYS = 1
 
 # Map output variable names to the possible names used by the source dataset.
 SOIL_WATER_VARIABLES = {
@@ -303,9 +305,11 @@ def main() -> None:
                     )
                     continue
 
-                for batch_offset in range(0, len(month_days), 7):
-                    # Read and compute at most seven days at once to limit memory.
-                    batch_days = month_days[batch_offset : batch_offset + 7]
+                for batch_offset in range(0, len(month_days), BATCH_DAYS):
+                    # Read and compute only a small day batch to limit memory.
+                    batch_days = month_days[
+                        batch_offset : batch_offset + BATCH_DAYS
+                    ]
                     batch_start = batch_days[0]
                     batch_end = batch_days[-1]
                     batch_missing_paths = [
