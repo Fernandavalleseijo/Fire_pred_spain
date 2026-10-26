@@ -14,8 +14,8 @@ library(tidyr)
 # Paths ·····································································
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-path_csv  = "~/Escritorio/UCM_Madrid/NOAA_ClimateIndex/CSV/"
-plot_path = "~/Escritorio/UCM_Madrid/PLOTS/Climate_Indices/"
+path_csv  = ""
+plot_path = ""
 
 # Create the plots folder if it does not exist
 dir.create(plot_path, showWarnings = FALSE, recursive = TRUE)
