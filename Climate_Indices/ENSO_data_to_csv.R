@@ -17,8 +17,8 @@ library(tidyr)
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-path = "~/Escritorio/UCM_Madrid/NOAA_ClimateIndex/"
-path_csv = "~/Escritorio/UCM_Madrid/NOAA_ClimateIndex/CSV/"
+path = ""
+path_csv = ""
 
 
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
