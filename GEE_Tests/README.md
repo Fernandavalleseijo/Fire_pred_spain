@@ -92,7 +92,3 @@ Small differences are expected from resampling, masking and floating-point round
 
 - ERA5-Land: Muñoz Sabater, J. (2019), Copernicus Climate Change Service (C3S) Climate Data Store.
 - NOAA OISST v2.1: Huang et al. (2021), *Journal of Climate*; NOAA National Centers for Environmental Information.
-
-## Licence
-
-Add a licence of your choice (e.g. MIT) before making the repository public.
