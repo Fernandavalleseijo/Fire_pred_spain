@@ -1,4 +1,4 @@
-# Wildfire prediction in Spain using climate teleconnections
+# Wildfire prediction in Spain
 
 This project prepares climate datasets for analysis alongside wildfire-event
 records in Spain. The current work covers sea surface temperature, soil
@@ -42,7 +42,7 @@ The data-preparation script reads local NOAA text/ASCII files from
 `~/Escritorio/UCM_Madrid/NOAA_ClimateIndex/`, reshapes the monthly or seasonal
 records, and writes CSV files to its `CSV/` subdirectory. It handles SST, SOI,
 OLR, RONI, MEI, AMO, NAO, and AAO data. The plotting script reads those CSVs
-and saves index plots to `~/Escritorio/UCM_Madrid/PLOTS/Climate_Indices/`.
+and saves index plots.
 
 These scripts implement CSV preparation and plotting; the required local
 source files must be present.
