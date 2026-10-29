@@ -1,10 +1,12 @@
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# Data Soruce
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-#°°°°°° DataFrames: Monthly and seasonal ENSO Data (DATA: sst, soi,orl, RONI, MEI - Source: NOAA)
-
-#°°°°°° Plots: Monthly and seasonal ENSO Data (DATA: sst, soi,orl, RONI, MEI - Source: NOAA)
+#°°°°°° DataFrames: Monthly and seasonal climate indices
+#°°°°°° (DATA: AAO, NAO, SST, SOI, OLR, RONI, MEI.v2, AMO, SCAND, EA, WEMO)
 
 #°°°°°° Source: https://psl.noaa.gov/data/timeseries/month/
+#°°°°°°         https://centroandaluzengloba.org/en/wemo-index-monitoring/
 
 # Libraries ·····································································
 
@@ -16,10 +18,8 @@ library(tidyr)
 # Files ·····································································
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-path = ""
-path_csv = ""
-
+path = "~/Escritorio/UCM_Madrid/Climate_Indices/"
+path_csv = "~/Escritorio/UCM_Madrid/Climate_Indices/CSV/"
 
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # AAO Data (monthly dataset)
@@ -175,4 +175,69 @@ amo_long <- amo_NOAA_1856_2022 %>%
   rename(year = YEAR)
 
 # Save monthly stats
-write.csv(amo_NOAA_1856_2022, paste0(path_csv,"amo_NOAA_1856_2022.csv"), row.names = FALSE)
+write.csv(amo_long, paste0(path_csv,"amo_NOAA_1856_2022.csv"), row.names = FALSE)
+
+
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# scand Data (monthly dataset)
+
+# scand standard Data 
+
+scand_NOAA_1850_2026 <- read.table(
+  paste(path, "scand_NOAA_1950_2026.txt", sep = ""),
+  header = TRUE,
+  fill = TRUE,
+  na.strings = "-999.9"
+)
+
+scand_long <- scand_NOAA_1850_2026 %>%
+  pivot_longer(-YEAR, names_to = "month", values_to = "scand") %>%
+  mutate(month = match(month, c("JAN","FEB","MAR","APR","MAY","JUN",
+                                "JUL","AUG","SEP","OCT","NOV","DEC"))) %>%
+  rename(year = YEAR)
+
+# Save monthly stats
+write.csv(scand_long, paste0(path_csv,"scand_NOAA_1850_2026.csv"), row.names = FALSE)
+
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# EA Data (monthly dataset)
+
+EA_NOAA_1950_2026 <- read.table(paste(path,'ea_NOAA_1950_2026.txt', sep = ""), header = FALSE, sep = "")
+
+# To match fire data
+colnames(EA_NOAA_1950_2026)[1:3] <- c("year", "month", "ea")
+
+# Save monthly stats
+write.csv(EA_NOAA_1950_2026, paste0(path_csv,"ea_NOAA_1950_2026.csv"), row.names = FALSE)
+
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# WeMOi Data (monthly dataset)
+
+# Read file, skip metadata lines starting with "#"
+wemoi_lines <- readLines(paste0(path, "wemoi_1821_2026.csv"), encoding = "UTF-8")
+wemoi_lines <- wemoi_lines[!grepl("^#", wemoi_lines) & nzchar(trimws(wemoi_lines))]
+
+# Detect separator (tab or comma) from the header line
+sep_wemoi <- ifelse(grepl("\t", wemoi_lines[1]), "\t", ",")
+
+wemoi_1821_2026 <- read.table(text = wemoi_lines, header = TRUE, sep = sep_wemoi,
+                              strip.white = TRUE, stringsAsFactors = FALSE,
+                              fill = TRUE)
+
+# Clean column names (removes BOM / spaces / uppercase)
+colnames(wemoi_1821_2026) <- tolower(trimws(gsub("^\ufeff|^X\\.\\.\\.", "", colnames(wemoi_1821_2026))))
+
+# Create year and month from date, then drop date
+wemoi_1821_2026 <- wemoi_1821_2026 %>%
+  mutate(date  = as.Date(date),
+         year  = as.integer(format(date, "%Y")),
+         month = as.integer(format(date, "%m"))) %>%
+  select(year, month, wemoi, source, reliability)
+
+# Save monthly stats
+write.csv(wemoi_1821_2026, paste0(path_csv,"wemoi_1821_2026.csv"), row.names = FALSE)
+
+# check wemoi_1821_2026
+
+wemoi_1821_2026 %>%
+  count(source, reliability)
