@@ -18,8 +18,8 @@ library(tidyr)
 # Files ·····································································
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-path = "~/Escritorio/UCM_Madrid/Climate_Indices/"
-path_csv = "~/Escritorio/UCM_Madrid/Climate_Indices/CSV/"
+path = ""
+path_csv = ""
 
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # AAO Data (monthly dataset)
