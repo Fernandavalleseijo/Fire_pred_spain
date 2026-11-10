@@ -10,7 +10,7 @@ They are **checks, not production code**: each one reads a single day or month (
 |---|---|---|---|
 | `ERA5-Land_SM_test.js` | `ECMWF/ERA5_LAND/DAILY_AGGR` | `volumetric_soil_water_layer_1` (`swvl1`, m³/m³) | Check soil moisture for one day, one point (Madrid), a 1-year series and the spatial mean over Spain |
 | `NOAA_SST_Test.js` | `NOAA/CDR/OISST/V2_1` | `sst` (scale factor 0.01 → °C) | Check mean SST over eight rectangular regions for one day |
-| `GEE_SPEI_map_test.js` | `CSIC/SPEI/2_11` | `SPEI_XX_month` (SPEI timescale XX, dimensionless) | Check the SPEI map of one month over Spain and the value at one grid-cell centre |
+| `CSIC-SPEIbasev2.11_SPEI_Test.js` | `CSIC/SPEI/2_11` | `SPEI_XX_month` (SPEI timescale XX, dimensionless) | Check the SPEI map of one month over Spain and the value at one grid-cell centre |
 
 ## How to run
 
