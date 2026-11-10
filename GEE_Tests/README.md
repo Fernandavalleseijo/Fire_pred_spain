@@ -1,8 +1,8 @@
-# GEE validation scripts: ERA5-Land soil moisture and NOAA OISST SST
+# GEE validation scripts: ERA5-Land soil moisture, NOAA OISST SST and SPEIbase
 
-Two small Google Earth Engine (GEE) Code Editor scripts used as an **independent control** of the Python cloud-processing pipelines for soil moisture and sea surface temperature (SST). They pull the same variable, date and region from GEE so the values can be compared against the pipeline output.
+Three small Google Earth Engine (GEE) Code Editor scripts used as an **independent control** of the Python cloud-processing pipelines for soil moisture, sea surface temperature (SST) and the SPEI drought index. They pull the same variable, date and region from GEE so the values can be compared against the pipeline output.
 
-They are **checks, not production code**: each one reads a single day or a short series, prints results to the Console, and is meant to be compared against the Python/R output by hand.
+They are **checks, not production code**: each one reads a single day or month (or a short series), prints results to the Console, and is meant to be compared against the Python/R output by hand.
 
 ## Contents
 
@@ -10,6 +10,7 @@ They are **checks, not production code**: each one reads a single day or a short
 |---|---|---|---|
 | `ERA5-Land_SM_test.js` | `ECMWF/ERA5_LAND/DAILY_AGGR` | `volumetric_soil_water_layer_1` (`swvl1`, m³/m³) | Check soil moisture for one day, one point (Madrid), a 1-year series and the spatial mean over Spain |
 | `NOAA_SST_Test.js` | `NOAA/CDR/OISST/V2_1` | `sst` (scale factor 0.01 → °C) | Check mean SST over eight rectangular regions for one day |
+| `GEE_SPEI_map_test.js` | `CSIC/SPEI/2_11` | `SPEI_XX_month` (SPEI timescale XX, dimensionless) | Check the SPEI map of one month over Spain and the value at one grid-cell centre |
 
 ## How to run
 
@@ -18,7 +19,7 @@ GEE Code Editor scripts cannot be executed directly from GitHub.
 1. Open the [GEE Code Editor](https://code.earthengine.google.com/) (requires a GEE-enabled account).
 2. Create a new script and paste the contents of the `.js` file.
 3. Edit the parameters (see below) and click **Run**.
-4. Read the results in the **Console** tab (and the **Map** for the ERA5-Land layer).
+4. Read the results in the **Console** tab (and the **Map** for the ERA5-Land and SPEI layers).
 
 ## `ERA5-Land_SM_test.js`
 
@@ -77,18 +78,55 @@ Computes the spatial mean SST (°C) for one day over eight regions and prints a 
 - The dataset scale factor (0.01) is applied in the script, so results are in °C.
 - Land pixels are masked in the dataset and ignored in the mean.
 
+## `GEE_SPEI_map_test.js`
+
+Checks the Standardized Precipitation-Evapotranspiration Index (SPEI) from SPEIbase v2.11 (CSIC), the same release downloaded and cropped by the Python script (`SPEIbase_v2_11_Spain_speiXX_1950-2024.nc`).
+
+**What it does**
+
+1. Loads one month of the chosen SPEI timescale (default: SPEI-12, August 2022).
+2. Shows it as a map layer clipped to the Spain bounding box, with a diverging red–blue palette (`min: -3`, `max: 3`), country borders, Spain outline and a legend.
+3. Prints the SPEI value at one grid-cell centre (`-3.75, 40.25`, near Madrid) to the Console to compare with the NetCDF.
+
+**Parameters to edit**
+
+- `SCALE`: SPEI timescale in months (1–48). The band name (`SPEI_01_month` … `SPEI_48_month`) is built from it.
+- `DATE`: month to map (`YYYY-MM-01`). The collection is monthly, with one image per month.
+- `bbox`: Spain bounding box `[-9.5, 35.8, 4.5, 43.9]` (lon min, lat min, lon max, lat max), the same as in the Python crop. At 0.5° this is expected to give 28 × 16 cells.
+- `pt`: control point. Keep it at a cell centre (see notes).
+- `scale: 55660` m in `reduceRegion`: native SPEIbase resolution (0.5°). Keep it so GEE does not resample.
+
+**Notes**
+
+- GEE asset `CSIC/SPEI/2_11` covers 1901-01 to 2024-12, so it includes the whole 1950–2024 period of the pipeline files. Older releases (`CSIC/SPEI/2_10`, `2_9`, `2_8`) are different versions: do not compare them against the v2.11 NetCDF.
+- Band range in the catalog is about ±2.33, so the ±3 colour stretch leaves the extremes of the palette unused. It is kept to match the colours of the R map.
+- SPEIbase cell centres lie at `.25` and `.75`. Using a point at a cell centre avoids picking a different cell than the NetCDF extraction at a cell edge.
+- `filterDate` end date is exclusive (`DATE` + 1 month).
+- Country borders come from `USDOS/LSIB_SIMPLE/2017` (simplified) and may differ slightly from the Natural Earth borders used in the R script. They are drawn only for display and do not affect the SPEI values.
+- Unlike the other two scripts, the SPEI check is mostly visual (map) plus one point value. For a numeric check of the whole area, add a `reduceRegion` with `ee.Reducer.mean()` over `bbox` and compare it with the same mean in the NetCDF.
+
+**Comparing the point value in R**
+
+```r
+r <- terra::rast("SPEIbase_v2_11_Spain_spei12_1950-2024.nc", subds = "spei12")
+idx <- which(format(terra::time(r), "%Y-%m") == "2022-08")
+terra::extract(r[[idx]], cbind(-3.75, 40.25))
+```
+
 ## Comparing against the pipeline
 
 For a valid comparison, match these between GEE and the Python/R output:
 
-- Same date, variable and bounding box or region definition.
+- Same date (or month), variable (or SPEI timescale) and bounding box or region definition.
+- Same dataset version (e.g. SPEIbase v2.11 in both).
 - Same longitude convention (−180–180 vs 0–360).
-- Same units (m³/m³ for soil moisture, °C for SST, after scaling).
-- Same spatial aggregation (mean over valid, unmasked cells).
+- Same units (m³/m³ for soil moisture, °C for SST after scaling, dimensionless for SPEI).
+- Same spatial aggregation (mean over valid, unmasked cells) or the same grid-cell centre for point checks.
 
-Small differences are expected from resampling, masking and floating-point rounding. Large differences usually point to a mismatch in region, longitude convention, date or scale factor.
+Small differences are expected from resampling, masking and floating-point rounding. Large differences usually point to a mismatch in region, longitude convention, date, timescale, dataset version or scale factor.
 
 ## Data sources
 
 - ERA5-Land: Muñoz Sabater, J. (2019), Copernicus Climate Change Service (C3S) Climate Data Store.
 - NOAA OISST v2.1: Huang et al. (2021), *Journal of Climate*; NOAA National Centers for Environmental Information.
+- SPEIbase v2.11: Vicente-Serrano, S.M., Beguería, S., López-Moreno, J.I. (2010), *Journal of Climate*; Consejo Superior de Investigaciones Científicas (CSIC), https://spei.csic.es/database.html.
