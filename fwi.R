@@ -15,7 +15,7 @@ library(ncdf4)      # low-level NetCDF reading (metadata inspection)
 library(terra)      # raster handling: summaries, extraction, maps
 library(tidyverse)  # dplyr + tidyr + ggplot2 (includes tibble, pipes, etc.)
 
-path <- "~/Escritorio/UCM_Madrid/Fires"
+path <- ""
 f_nc <- file.path(path, "fwi_month_Iberia.nc")
 
 
