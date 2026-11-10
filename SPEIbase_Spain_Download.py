@@ -19,7 +19,7 @@ BASE_URL = f"https://spei.csic.es/spei_database_{VERSION}/nc"
 FIRST_YEAR = 1950
 LAST_YEAR = 2024
 DEFAULT_OUTPUT = Path(
-    "/home/jose/Escritorio/UCM_Madrid/SPEIbase_Spain"
+    ""
 )
 LATITUDE_BOUNDS = (35.8, 43.9)
 LONGITUDE_BOUNDS = (-9.5, 4.5)
