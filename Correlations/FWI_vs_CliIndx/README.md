@@ -14,17 +14,14 @@ The folder contains three R scripts:
 
 ```
 Daily FWI (.nc) ──► FWI_nc_to_csv_daily-mean-JJAS-All-Spain.R ──► daily mean FWI (.csv) ──┐
-                                                                                          ├─► Correlation_FWI_CliIdx_AllSpain_Season.R
-Climate indices (CSV) ────────────────────────────────────────────────────────────────────┤
-                                                                                          └─► Correlation_FWI_CliIdx_AllSpain_Month.R  (also reads the monthly FWI .nc)
+                                                                  Climate indices (CSV) ──┤
+                                                                                          ├─► Correlation_FWI_CliIdx_AllSpain_Month.R
+                                                                                          └─► Correlation_FWI_CliIdx_AllSpain_Season.R
 ```
 
 1. Run `FWI_nc_to_csv_daily-mean-JJAS-All-Spain.R` **once**. It is the slow step (a long daily record at high resolution), so its CSV is reused afterwards.
 2. Run `Correlation_FWI_CliIdx_AllSpain_Season.R`, which reads that CSV.
-3. `Correlation_FWI_CliIdx_AllSpain_Month.R` is independent of step 1. It reads the monthly FWI NetCDF directly.
-
-> The seasonal script reads the daily CSV by file name. Make sure the name written by script 1 (`path_daily_output`) is exactly the name read by script 3 (`fwi_daily <- read_csv(...)`).
-
+3. `Correlation_FWI_CliIdx_AllSpain_Month.R`, which reads that CSV.
 
 ## Common methodology
 
@@ -111,6 +108,6 @@ The script also prints the 25 strongest predictors and a summary per configurati
 ## How to run
 
 1. Edit the paths at the top of each script (`path_fwi_daily`, `path_fwi`, `path_csv`, output folders).
-2. Run script 1, then script 3. Script 2 can be run at any time.
+2. Run script 1, then Script 2  and/or script 3. 
 
 **R packages:** `terra`, `dplyr`, `tidyr`, `tibble`, `lubridate`, `readr`, `purrr`, `ggplot2`.
