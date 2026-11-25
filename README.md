@@ -102,9 +102,3 @@ independent check of the soil-moisture and SST pipelines. They are checks, not p
 | Soil moisture (`swvl1`–`swvl4`) | Predictor | ERA5-Land | 1950-01-02 – 2025 | Daily, 0.1° |
 | SPEI (scales 1–48) | Predictor | SPEIbase v2.11 (CSIC) | 1950–2024 | Monthly, 0.5° |
 | Climate indices (ENSO, NAO, AMO, etc.) | Predictor | NOAA PSL, WeMOi | Varies by index | Monthly / seasonal |
-
-## Current status
-
-Data preparation is in place for all predictors, and the FWI target has been explored. The
-modelling step, which links the predictors to FWI (including lagged relationships), is not yet
-implemented in this repository.
